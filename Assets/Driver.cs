@@ -4,23 +4,30 @@ using UnityEngine;
 // using System;
 
 public class Driver : MonoBehaviour {
-    [SerializeField] float steerSpeed = 0.1f;
-    [SerializeField] float moveSpeed = 0.01f;
+    [SerializeField] float steerSpeed = 1f;
+    [SerializeField] float moveSpeed = 20f;
+    [SerializeField] float slowSpeed = 15f;
+    [SerializeField] float boostSpeed = 30f;
     void Start() {
     }
 
     void Update() {
-        float steerAmount = Input.GetAxisRaw("Horizontal") * steerSpeed * Time.deltaTime;
-        // if (System.Math.Abs(Input.GetAxis("Horizontal")) != 1) {
-        //     steerAmount = 0;
-        // }
-        transform.Rotate(0, 0, - steerAmount);
-        float moveAmount = Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime;
-        // if (System.Math.Abs(Input.GetAxis("Vertical")) != 1) {
-        //     moveAmount = 0;
-        // }
-        // Debug.Log(Input.GetAxis("Vertical"));
-
+        float moveAmount = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
         transform.Translate(0, moveAmount, 0);
+        float steerAmount = Input.GetAxisRaw("Horizontal") * steerSpeed * Time.deltaTime;
+        if (moveAmount < 0) {
+            steerAmount = -steerAmount;
+        }
+        transform.Rotate(0, 0, - steerAmount);
+    }
+
+    void OnCollisionEnter2D(Collision2D other) {
+        moveSpeed = slowSpeed;    
+    }
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if (other.tag == "Boost") {
+            moveSpeed = boostSpeed;
+        }
     }
 }
